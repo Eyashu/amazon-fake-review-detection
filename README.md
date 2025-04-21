@@ -94,8 +94,8 @@ To get the Amazon Fake Review Detection project running on your local machine, f
     This command reads `requirements.txt` and installs all the specified libraries (like Flask, google-generative-ai, firecrawl-python, python-dotenv, beautifulsoup4, requests) into your isolated virtual environment.
 
 5.  **Configuration (Environment Variables):**
-    This project requires sensitive API keys to access the Google Gemini and Firecrawl services. For security, these keys are loaded from environment variables and stored locally in a `.env` file, which is excluded from version control.
-
+    This project requires sensitive API keys to access the Google Gemini and Firecrawl services. For security, these keys must be loaded from environment variables and stored locally in a `.env` file, which is excluded from version control.
+    
     *   Locate the `.env.example` file in the root directory of the project (the same directory as `app.py` and `requirements.txt`).
     *   **Copy** this file and rename the copy to `.env`.
         ```bash
@@ -106,23 +106,23 @@ To get the Amazon Fake Review Detection project running on your local machine, f
         copy .env.example .env
         ```
     *   Open the newly created `.env` file in a text editor.
-    *   You will find lines defining variables with placeholder values (e.g., `GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY_HERE`). **Replace** the entire placeholder value (the text after the `=` sign) with your actual, obtained API key for each variable.
+    *   You will find lines defining variables with placeholder values (e.g., `GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY_HERE`). **Replace** the entire placeholder value (the text immediately following the `=` sign) with your actual, obtained API key for each corresponding variable.
 
     *   **Example of your `.env` file *after* you have edited it with your actual keys:**
         ```
         # Environment variables needed for the Amazon Fake Review Detection project
 
-        GOOGLE_API_KEY=AIzaSyA...[Your Actual Google API Key Goes Here]...XYZ
-        FIRECRAWL_API_KEY=fc-a1b2c3d4e5f6...[Your Actual Firecrawl API Key Goes Here]...7890
+        GOOGLE_API_KEY=[Your Actual Google API Key Goes Here]
+        FIRECRAWL_API_KEY=[Your Actual Firecrawl API Key Goes Here]
 
         # Add other required variables here if any...
         # DATABASE_URL=...
         # FLASK_ENV=development # Example for Flask environment setting
         ```
-        *(Note: Make sure there are no spaces immediately before or after the `=` sign unless they are part of the key itself).*
+        *(Note: Ensure there are no spaces immediately before or after the `=` sign unless they are part of the key itself. Keys should generally not be enclosed in quotes unless they contain special characters or spaces, which is uncommon for API keys).*
 
     *   Save the `.env` file.
-    *   **Security Note:** Your `.env` file contains sensitive information (your API keys). For your security, the project's `.gitignore` file is specifically configured to prevent this file from being committed to the repository. **Ensure you never manually add or attempt to commit your `.env` file.**
+    *   **Security Note:** Your `.env` file contains highly sensitive information (your personal API keys). For your security, the project's `.gitignore` file is specifically configured to prevent this file from being committed to the repository. **Ensure you never manually add or attempt to commit your `.env` file.** Treat your `.env` file as private and local to your development environment.
 
 ## Usage
 
