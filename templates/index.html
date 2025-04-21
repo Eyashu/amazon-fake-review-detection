@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Fake Review Detector</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #555;
+        }
+        form {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px; /* Space between input and button */
+        }
+        input[type="text"] {
+            flex-grow: 1; /* Allow input to take available space */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #results {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .product-info h2 {
+            margin-top: 0;
+            color: #0275d8;
+        }
+        .review-item {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .review-item strong {
+            color: #333;
+        }
+        .fake {
+            color: red;
+            font-weight: bold;
+        }
+        .real {
+            color: green;
+            font-weight: bold;
+        }
+         .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #555;
+         }
+         .error {
+             color: red;
+             font-weight: bold;
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Amazon Fake Review Detector</h1>
+
+        <form id="reviewForm">
+            <input type="text" id="productUrl" placeholder="Enter Amazon Product URL" required>
+            <button type="submit">Analyze Reviews</button>
+        </form>
+
+        <div id="results">
+            </div>
+    </div>
+
+    <script>
+        document.getElementById('reviewForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const productUrl = document.getElementById('productUrl').value;
+            const resultsDiv = document.getElementById('results');
+
+            resultsDiv.innerHTML = '<p class="loading">Analyzing reviews...</p>'; // Show loading message
+
+            try {
+                // Send the URL to the Flask backend
+                const response = await fetch('http://127.0.0.1:5000/analyze_reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded', // Standard form data
+                    },
+                    body: new URLSearchParams({ 'product_url': productUrl }) // Send as form data
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Clear previous results
+                resultsDiv.innerHTML = '';
+
+                // Display Product Info (if available)
+                if (data.product_info && data.product_info.title !== 'N/A') {
+                     resultsDiv.innerHTML += `
+                        <div class="product-info">
+                            <h2>Product: ${data.product_info.title}</h2>
+                            <p>Price: ${data.product_info.price}</p>
+                        </div>
+                        <hr>
+                     `;
+                }
+
+
+                // Display Review Report
+                if (data.review_report && data.review_report.length > 0) {
+                    resultsDiv.innerHTML += '<h2>Review Analysis Report:</h2>';
+                    data.review_report.forEach(review => {
+                        const statusClass = review.is_fake ? 'fake' : 'real';
+                        const statusText = review.is_fake ? 'FAKE' : 'REAL';
+                        resultsDiv.innerHTML += `
+                            <div class="review-item">
+                                <p><strong>User:</strong> ${review.username}</p>
+                                <p><strong>Time:</strong> ${review.timestamp}</p>
+                                <p><strong>Status:</strong> <span class="${statusClass}">${statusText}</span></p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    resultsDiv.innerHTML += '<p>No reviews found or analyzed for this product.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `<p class="error">Error analyzing reviews: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
