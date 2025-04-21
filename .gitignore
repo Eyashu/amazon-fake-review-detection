@@ -16,8 +16,7 @@ eggs/
 .eggs/
 lib/
 lib64/
-parts/
-sdist/
+parts/sdist/
 var/
 wheels/
 share/python-wheels/
@@ -128,7 +127,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env          # This line ignores your sensitive .env file
 .venv
 env/
 venv/
@@ -173,5 +172,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Project-specific ignored files (contains secrets)
-test_firecrawl_api.py
+# Project-specific ignored files (contains secrets or are temporary/build artifacts)
+test_firecrawl_api.py # Ignore this file because it contains a hardcoded API key
